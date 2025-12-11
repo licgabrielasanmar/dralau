@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VISION BOARD 2026 by Lau</title>
     <style>
+        /* Estilos CSS (Sin Cambios Críticos, solo para la apariencia) */
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(to bottom right, #ffecd2 0%, #fcb69f 100%);
@@ -87,7 +88,7 @@
             background-color: #6a0dad;
         }
 
-        /* Estilos de los minijuegos (sin cambios mayores) */
+        /* Estilos específicos de los juegos */
         #fog-game-canvas, #mirror-game-canvas {
             border: 1px solid #ccc;
             touch-action: none;
@@ -145,6 +146,7 @@
             position: relative;
             overflow: hidden;
             touch-action: none;
+            background-color: #ffcccc;
         }
         #ice-cream-scoop {
             position: absolute;
@@ -221,7 +223,7 @@
 <div id="ice-cream-game-area" class="game-area">
             <h2>Relaciones Sanas ❤️</h2>
             <p>¡Toca rápido el helado para consumirlo antes de que se derrita!</p>
-            <div id="ice-cream-game" style="background-color: #ffcccc;">
+            <div id="ice-cream-game">
                 <div id="ice-cream-scoop"></div>
             </div>
             <div id="ice-cream-game-message">Toca: 0</div>
@@ -256,10 +258,37 @@
     </div>
 
     <script>
+        // Declaraciones globales (sin cambios en las variables)
         let currentGameId = null;
         let animationFrames = {}; 
+        let antScore = 0;
+        let antContainer = null;
+        let currentCards = [];
+        let cardIndex = 0;
+        let swipeScore = 0;
+        let swipeTimer = 30;
+        let isDragging = false;
+        let startX = 0;
+        let swipeGame = null;
+        let taps = 0;
+        const maxTaps = 30;
+        const initialHeight = 180;
+        let iceCreamScoop = null;
+        
+        const cardsData = [
+            { emoji: '🍔', type: 'negative', text: 'Comida Chatarra' },
+            { emoji: '📺', type: 'negative', text: 'Sedentarismo' },
+            { emoji: '🍎', type: 'positive', text: 'Comida Saludable' },
+            { emoji: '🏃‍♀️', type: 'positive', text: 'Deporte Diario' },
+            { emoji: '😴', type: 'positive', text: 'Dormir 8h' },
+            { emoji: '🍷', type: 'negative', text: 'Exceso de Alcohol' },
+            { emoji: ' stress', type: 'negative', text: 'Estrés Constante' },
+            { emoji: '🩺', type: 'positive', text: 'Chequeos Médicos' },
+            { emoji: '🧘‍♀️', type: 'positive', text: 'Meditar' },
+            { emoji: '🥶', type: 'negative', text: 'Falta de Agua' }
+        ];
 
-        // --- Manejo de Menú y Juegos ---
+        // --- Funciones de Menú y Control (Mismo funcionamiento) ---
         function showGame(gameId) {
             document.getElementById('main-menu').style.display = 'none';
             if (currentGameId) {
@@ -282,9 +311,9 @@
         }
 
         function initializeGame(gameId) {
-            // Detener animaciones previas
             if (animationFrames[gameId]) {
-                cancelAnimationFrame(animationFrames[gameId]);
+                clearInterval(animationFrames[gameId]);
+                delete animationFrames[gameId];
             }
 
             switch (gameId) {
@@ -315,24 +344,28 @@
                 delete animationFrames[gameId];
             }
             
-            // Limpiar estados de juego
             if (gameId === 'ant-game-area') {
-                const antContainer = document.getElementById('ant-game-area-canvas');
-                antContainer.innerHTML = '<span class="money-pile">💰</span>';
+                if (antContainer) {
+                    antContainer.innerHTML = '<span class="money-pile">💰</span>';
+                }
                 document.getElementById('ant-score').innerText = 'Hormigas Aplastadas: 0';
             }
             if (gameId === 'swipe-game-area') {
-                 document.getElementById('swipe-game').innerHTML = '<div class="swipe-game-end" id="swipe-game-end-message"></div>';
+                if (swipeGame) {
+                    swipeGame.innerHTML = '<div class="swipe-game-end" id="swipe-game-end-message"></div>';
+                }
             }
         }
 
-        // --- Funciones del Minijuego 1 (Niebla) y 7 (Espejo) ---
+        // --- Minijuego 1 (Niebla) y 7 (Espejo) ---
         function setupWipeCanvas(canvasId, resultId, metasOrText, wipeThreshold, finishMessage) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
             const resultElement = document.getElementById(resultId);
 
-            // 1. Dibujar el contenido/fondo
+            // ... (El código de inicialización de Canvas y dibujo es el mismo) ...
+
+             // 1. Dibujar el contenido/fondo
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = (canvasId === 'fog-game-canvas') ? '#a0c4ff' : 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -357,12 +390,14 @@
 
             let isWiping = false;
             
+            // Función de limpieza de niebla (mejorada la detección de eventos)
             function wipe(e) {
                 if (!isWiping) return;
 
                 const rect = canvas.getBoundingClientRect();
-                const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
-                const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+                // Usa e.changedTouches para obtener las coordenadas táctiles
+                const clientX = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientX : e.clientX;
+                const clientY = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientY : e.clientY;
 
                 const x = clientX - rect.left;
                 const y = clientY - rect.top;
@@ -377,7 +412,7 @@
             }
             
             function startWiping(e) {
-                e.preventDefault(); // Evita el scroll táctil
+                e.preventDefault(); 
                 isWiping = true;
                 wipe(e);
             }
@@ -401,7 +436,7 @@
                     resultElement.style.display = 'block';
                     resultElement.innerText = finishMessage || resultElement.innerText;
 
-                    // Remover listeners para finalizar
+                    // Desvincular eventos para detener el juego
                     canvas.removeEventListener('pointerdown', startWiping);
                     canvas.removeEventListener('pointermove', wipe);
                     canvas.removeEventListener('pointerup', stopWiping);
@@ -410,12 +445,19 @@
                     canvas.removeEventListener('touchend', stopWiping);
                 }
             }
-
-            // Asignar listeners táctiles (touch) y de puntero (pointer)
+            
+            // Limpieza inicial de listeners para evitar duplicados
+            canvas.removeEventListener('pointerdown', startWiping);
+            canvas.removeEventListener('pointermove', wipe);
+            canvas.removeEventListener('pointerup', stopWiping);
+            canvas.removeEventListener('touchstart', startWiping);
+            canvas.removeEventListener('touchmove', wipe);
+            canvas.removeEventListener('touchend', stopWiping);
+            
+            // Asignar listeners táctiles y de puntero
             canvas.addEventListener('pointerdown', startWiping);
             canvas.addEventListener('pointermove', wipe);
             canvas.addEventListener('pointerup', stopWiping);
-            canvas.addEventListener('pointerout', stopWiping);
             
             canvas.addEventListener('touchstart', startWiping);
             canvas.addEventListener('touchmove', wipe);
@@ -437,10 +479,8 @@
         }
 
         // --- Minijuego 3: Abundancia Financiera (Hormigas) ---
-        let antScore = 0;
-        const antContainer = document.getElementById('ant-game-area-canvas');
-
         function createAnt() {
+            // ... (El código de createAnt es el mismo, pero usa la variable antContainer) ...
             const ant = document.createElement('div');
             ant.classList.add('ant');
             ant.innerText = '🐜';
@@ -459,4 +499,247 @@
 
             setTimeout(() => {
                 if (ant.parentNode === antContainer) {
-                    antContainer
+                    antContainer.removeChild(ant);
+                }
+            }, duration * 1000);
+
+            ant.addEventListener('pointerdown', function(e) {
+                e.stopPropagation(); 
+                if (ant.innerText !== '💥') {
+                    antScore++;
+                    document.getElementById('ant-score').innerText = `Hormigas Aplastadas: ${antScore}`;
+                    ant.innerText = '💥';
+                    ant.style.pointerEvents = 'none';
+                    setTimeout(() => antContainer.removeChild(ant), 500);
+                }
+            });
+        }
+
+        function antLoop() {
+            createAnt();
+            const delay = Math.max(500, 2000 - antScore * 50);
+            animationFrames['ant-game-area'] = setTimeout(antLoop, delay);
+        }
+
+        function initAntGame() {
+            antContainer = document.getElementById('ant-game-area-canvas'); // Asignar al iniciar
+            antScore = 0;
+            document.getElementById('ant-score').innerText = 'Hormigas Aplastadas: 0';
+            antContainer.innerHTML = '<span class="money-pile">💰</span>';
+            antLoop();
+        }
+        
+        // --- Minijuego 4: Bienestar Físico (Deslizar Tarjetas) ---
+        function createCard(data, index) {
+            // ... (El código de createCard es el mismo, pero usa la variable swipeGame) ...
+            const card = document.createElement('div');
+            card.classList.add('swipe-card');
+            card.style.zIndex = cardsData.length - index;
+            card.innerHTML = data ? `${data.emoji}<p>${data.text}</p>` : '';
+            card.dataset.type = data ? data.type : '';
+
+            if (index === 0 && data) {
+                card.id = 'active-card';
+                // Usar pointer events para compatibilidad táctil
+                card.addEventListener('pointerdown', startSwipe);
+                card.addEventListener('pointermove', moveSwipe);
+                card.addEventListener('pointerup', endSwipe);
+                card.addEventListener('pointercancel', endSwipe);
+            }
+            return card;
+        }
+
+        function renderSwipeCards() {
+            swipeGame.innerHTML = '';
+            currentCards.slice(cardIndex, cardIndex + 3).reverse().forEach((data, i) => {
+                swipeGame.appendChild(createCard(data, i));
+            });
+             swipeGame.appendChild(document.getElementById('swipe-game-end-message'));
+        }
+
+        function startSwipe(e) {
+            if (swipeTimer === 0) return;
+            isDragging = true;
+            startX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+            e.target.style.transition = 'none';
+        }
+
+        function moveSwipe(e) {
+            if (!isDragging) return;
+            const currentCard = document.getElementById('active-card');
+            const currentX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+            const deltaX = currentX - startX;
+
+            currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX / 20}deg)`;
+            currentCard.style.opacity = 1 - (Math.abs(deltaX) / 400);
+        }
+
+        function endSwipe(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            const currentCard = document.getElementById('active-card');
+            if (!currentCard) return;
+
+            currentCard.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+            
+            const transform = currentCard.style.transform;
+            const match = transform.match(/translateX\((.*?)px\)/);
+            const deltaX = match ? parseFloat(match[1]) : 0;
+            
+            let action = '';
+
+            if (deltaX > 80) { action = 'positive'; } 
+            else if (deltaX < -80) { action = 'negative'; }
+
+            if (action) {
+                const cardType = currentCard.dataset.type;
+                
+                if ((action === 'positive' && cardType === 'positive') || (action === 'negative' && cardType === 'negative')) {
+                    swipeScore += 10;
+                    currentCard.style.backgroundColor = '#d4edda';
+                } else {
+                    swipeScore -= 5;
+                    currentCard.style.backgroundColor = '#f8d7da';
+                }
+                document.getElementById('swipe-score').innerText = `Puntaje: ${swipeScore}`;
+                
+                currentCard.style.transform = `translateX(${(action === 'positive' ? 500 : -500)}px) rotate(${action === 'positive' ? 30 : -30}deg)`;
+                
+                setTimeout(() => {
+                    cardIndex++;
+                    if (cardIndex < cardsData.length) {
+                         renderSwipeCards();
+                    } else {
+                        endSwipeGame();
+                    }
+                }, 300);
+
+            } else {
+                currentCard.style.transform = 'translateX(0) rotate(0deg)';
+                currentCard.style.opacity = 1;
+            }
+        }
+
+        function swipeCountdown() {
+            const interval = setInterval(() => {
+                swipeTimer--;
+                document.getElementById('swipe-timer').innerText = `Tiempo: ${swipeTimer}s`;
+                if (swipeTimer <= 0) {
+                    clearInterval(interval);
+                    endSwipeGame();
+                }
+            }, 1000);
+            animationFrames['swipe-game-area'] = interval;
+        }
+
+        function endSwipeGame() {
+            const messageElement = document.getElementById('swipe-game-end-message');
+            messageElement.style.display = 'flex';
+            messageElement.innerHTML = `
+                ¡Tiempo agotado! <br>
+                Tu puntaje final es: **${swipeScore}** <br><br>
+                ${swipeScore >= 50 ? '¡Excelente Dra. Lau, tu bienestar físico está en marcha!' : '¡A seguir practicando, la disciplina no es fácil!'}
+            `;
+            
+            const activeCard = document.getElementById('active-card');
+            if (activeCard) {
+                 activeCard.removeEventListener('pointerdown', startSwipe);
+                 activeCard.removeEventListener('pointermove', moveSwipe);
+                 activeCard.removeEventListener('pointerup', endSwipe);
+                 activeCard.removeEventListener('pointercancel', endSwipe);
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initSwipeGame() {
+            swipeGame = document.getElementById('swipe-game'); // Asignar al iniciar
+            currentCards = shuffleArray([...cardsData]);
+            cardIndex = 0;
+            swipeScore = 0;
+            swipeTimer = 30;
+            document.getElementById('swipe-timer').innerText = `Tiempo: ${swipeTimer}s`;
+            document.getElementById('swipe-score').innerText = `Puntaje: 0`;
+            document.getElementById('swipe-game-end-message').style.display = 'none';
+            renderSwipeCards();
+            swipeCountdown();
+        }
+
+        // --- Minijuego 5: Relaciones Sanas (Helado) ---
+        function updateIceCreamScoop() {
+            const remainingTaps = maxTaps - taps;
+            const newHeight = Math.max(0, (remainingTaps / maxTaps) * initialHeight);
+            
+            iceCreamScoop.style.height = `${newHeight}px`;
+            iceCreamScoop.style.width = `${newHeight}px`;
+            iceCreamScoop.style.top = `${10 + (initialHeight - newHeight)}px`; 
+            
+            document.getElementById('ice-cream-game-message').innerText = `Toca: ${taps}/${maxTaps}`;
+
+            if (taps >= maxTaps) {
+                iceCreamScoop.style.pointerEvents = 'none';
+                document.getElementById('flower-message').style.display = 'block';
+            }
+        }
+
+        function handleIceCreamTap() {
+            if (taps < maxTaps) {
+                taps++;
+                updateIceCreamScoop();
+            }
+        }
+
+        function initIceCreamGame() {
+            iceCreamScoop = document.getElementById('ice-cream-scoop'); // Asignar al iniciar
+            taps = 0;
+            iceCreamScoop.style.pointerEvents = 'auto';
+            document.getElementById('flower-message').style.display = 'none';
+            updateIceCreamScoop();
+
+            iceCreamScoop.removeEventListener('pointerdown', handleIceCreamTap); 
+            iceCreamScoop.addEventListener('pointerdown', handleIceCreamTap); 
+        }
+
+        // --- Minijuego 6: Lugares que quieres conocer (Botones de Experiencias) ---
+        function initTravelGame() {
+            const buttons = document.querySelectorAll('#travel-game-area .travel-btn');
+            const messageDisplay = document.getElementById('travel-message');
+            messageDisplay.innerText = '';
+
+            buttons.forEach(button => {
+                 button.onclick = function() {
+                    messageDisplay.innerText = this.getAttribute('data-message');
+                };
+            });
+        }
+    
+        // *** FUNCIÓN DE INICIALIZACIÓN FORZADA ***
+        function initializeAll() {
+             const menuButtons = document.querySelectorAll('.menu-button');
+
+             menuButtons.forEach(button => {
+                 const gameId = button.getAttribute('data-game-id');
+                 if (gameId) {
+                     // Enlaza la función showGame al evento 'click' de cada botón
+                     button.addEventListener('click', () => showGame(gameId));
+                 }
+             });
+             
+             initTravelGame(); 
+        }
+
+        // Llama a la inicialización después de que el DOM esté completamente cargado.
+        document.addEventListener('DOMContentLoaded', initializeAll);
+
+        // Fallback: Si DOMContentLoaded falla por algún motivo (entornos muy restrictivos),
+        // intenta ejecutar la inicialización también al finalizar la carga de la ventana.
+        window.onload = initializeAll;
+    </script>
+</body>
+</html>
