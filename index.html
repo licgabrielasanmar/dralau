@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VISION BOARD 2026 by Lau</title>
     <style>
-        /* Estilos CSS (Sin Cambios Críticos, solo para la apariencia) */
+        /* ESTILOS CSS (Ajustados) */
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(to bottom right, #ffecd2 0%, #fcb69f 100%);
@@ -49,7 +49,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0 0 0 / 10%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -59,8 +59,16 @@
         .menu-button:active {
             transform: translateY(-2px);
         }
+        /* Estilo para botón completado */
+        .menu-button.completed {
+            background-color: #4CAF50; /* Verde de éxito */
+            border: 3px solid #28a745;
+            box-shadow: 0 0 15px #4CAF50;
+        }
+        
+        /* ESTILO CLAVE PARA OCULTAR LOS JUEGOS INICIALMENTE */
         .game-area {
-            display: none;
+            display: none; 
             margin-top: 20px;
             border: 2px solid #ddd;
             border-radius: 10px;
@@ -88,11 +96,131 @@
             background-color: #6a0dad;
         }
 
-        /* Estilos específicos de los juegos */
-        #fog-game-canvas, #mirror-game-canvas {
-            border: 1px solid #ccc;
-            touch-action: none;
+        /* Estilo para el mensaje final */
+        #final-message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(131, 56, 236, 0.95); /* Púrpura semi-transparente */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out;
         }
+
+        #final-message-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        #final-message-content {
+            padding: 40px;
+            border: 5px solid #ff99c8;
+            border-radius: 20px;
+            background: #fff0f5; 
+            color: #8338ec;
+            max-width: 80%;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            font-size: 1.5em;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        /* ESTILOS DEL JUEGO 1: RELACIONAR */
+        #relation-game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .match-pair {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .match-name, .match-emoji {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0 0 0 / 10%);
+        }
+        .match-name {
+            background-color: #ffb3c1;
+            color: #555;
+            width: 45%;
+            text-align: left;
+        }
+        .match-emoji {
+            background-color: #a2d2ff;
+            font-size: 1.5em;
+            width: 45%;
+            text-align: right;
+        }
+        .selected {
+            border: 3px solid #8338ec;
+            box-shadow: 0 0 10px rgba(131, 56, 236, 0.8);
+        }
+        .correct {
+            background-color: #d4edda;
+            border: 3px solid #28a745;
+            pointer-events: none;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border: 3px solid #dc3545;
+        }
+        #relation-message {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #8338ec;
+        }
+
+        /* ESTILOS DEL JUEGO 2: GATO (TIC-TAC-TOE) */
+        #tictactoe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 90%;
+            max-width: 300px;
+            aspect-ratio: 1 / 1;
+            margin: 20px auto;
+            border: 5px solid #cc3333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .tictactoe-cell {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .tictactoe-cell:not(:empty):hover {
+            cursor: default;
+        }
+        .tictactoe-cell:hover:empty {
+            background-color: #f0f0f0;
+        }
+        
+        /* ESTILOS DEL JUEGO 3: HORMIGAS */
         #ant-game-area-canvas {
             position: relative;
             width: 100%;
@@ -105,7 +233,8 @@
             position: absolute;
             font-size: 2em;
             z-index: 10;
-            transition: transform 0.5s linear;
+            transition: none; 
+            cursor: pointer;
         }
         .money-pile {
             position: absolute;
@@ -114,7 +243,29 @@
             transform: translate(-50%, -50%);
             font-size: 3em;
             z-index: 0;
+            transition: opacity 0.5s;
         }
+        #ant-game-message-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 50;
+        }
+
+
+        /* ESTILOS DEL JUEGO 4: SWIPE */
+        #swipe-game-area {
+            touch-action: pan-y; 
+        }
+
         #swipe-game {
             position: relative;
             width: 300px;
@@ -134,10 +285,36 @@
             align-items: center;
             justify-content: center;
             font-size: 3em;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0 0 0 / 10%);
             transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-            touch-action: none;
+            touch-action: none; 
         }
+        .swipe-card p {
+            font-size: 0.4em;
+            color: #555;
+            margin: 10px 0 0 0;
+        }
+        .swipe-game-end {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #8338ec;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 100;
+            display: none;
+        }
+        
+        /* ESTILOS DE OTROS JUEGOS */
         #ice-cream-game {
             width: 200px;
             height: 300px;
@@ -159,6 +336,37 @@
             left: 50%;
             transform: translateX(-50%);
         }
+        #flower-reward {
+            font-size: 1.5em; 
+            margin-top: 10px;
+            color: #dc3545; 
+            font-weight: bold;
+        }
+        #mirror-game-canvas {
+            border: 1px solid #ccc;
+            touch-action: none;
+        }
+        #mirror-message {
+            margin-top: 15px;
+        }
+        
+        /* Estilo para el mensaje de 50 puntos */
+        .score-message-50 {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            background: rgba(131, 56, 236, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -167,50 +375,52 @@
         <p>¡Será un año lleno de sorpresas, cosas bonitas y muchos logros, porque eres una persona extraordinaria!</p>
 
         <div class="menu-grid" id="main-menu">
-            <div class="menu-button" data-game-id="fog-game-area">Metas Claras 🎯</div>
-            <div class="menu-button" data-game-id="puzzle-game-area">Hábitos y Rutinas 🧩</div>
-            <div class="menu-button" data-game-id="ant-game-area">Abundancia Financiera 💰</div>
-            <div class="menu-button" data-game-id="swipe-game-area">Bienestar Físico 💪</div>
-            <div class="menu-button" data-game-id="ice-cream-game-area">Relaciones Sanas ❤️</div>
-            <div class="menu-button" data-game-id="travel-game-area">Lugares por Conocer ✈️</div>
-            <div class="menu-button" data-game-id="mirror-game-area">Palabras con Impacto ✨</div>
+            <div class="menu-button" data-game-id="relation-game-area" data-completion-key="metas">Metas Claras 🎯</div>
+            <div class="menu-button" data-game-id="tictactoe-game-area" data-completion-key="habitos">Hábitos y Rutinas 🧩</div>
+            <div class="menu-button" data-game-id="ant-game-area" data-completion-key="abundancia">Abundancia Financiera 💰</div>
+            <div class="menu-button" data-game-id="swipe-game-area" data-completion-key="bienestar">Bienestar Físico 💪</div>
+            <div class="menu-button" data-game-id="ice-cream-game-area" data-completion-key="relaciones">Relaciones Sanas ❤️</div>
+            <div class="menu-button" data-game-id="travel-game-area" data-completion-key="viajes">Lugares por Conocer ✈️</div>
+            <div class="menu-button" data-game-id="mirror-game-area" data-completion-key="impacto">Palabras con Impacto ✨</div>
         </div>
 
-        
-<div id="fog-game-area" class="game-area">
-            <h2>Metas Claras 🎯</h2>
-            <p>¡Limpia la niebla frotando rápido con tu dedo!</p>
-            <canvas id="fog-game-canvas" width="300" height="200"></canvas>
-            <div id="fog-game-result"></div>
-            <button class="back-button" onclick="goBack()">Volver al Menú</button>
-        </div>
-
-        
-<div id="puzzle-game-area" class="game-area">
-            <h2>Hábitos y Rutinas 🧩</h2>
-            <p>¡Arma el rompecabezas para construir tus hábitos! (Visualización)</p>
-             <div style="font-size: 1.5em; margin-top: 50px; color: #007bff;">
-                <p>Tu puedes lograrlo todo Lau</p>
-                <p>¡Usa esta sección para visualizar cómo cada pequeño paso arma la gran meta!</p>
+        <div id="relation-game-area" class="game-area">
+            <h2>Metas Claras 🎯: Relaciona al Exitoso</h2>
+            <p>Relaciona el nombre con su emoji característico. ¡Demuestra que sabes identificar el éxito!</p>
+            <div id="relation-game-container">
+                </div>
+            <div id="relation-message" style="display:none; color: #28a745; font-size: 1.3em;">
+                 Todas las personas exitosas tienen una meta. Nadie puede llegar a ninguna parte a menos que sepa adónde quiere ir y lo que quiere ser o hacer.
             </div>
             <button class="back-button" onclick="goBack()">Volver al Menú</button>
         </div>
 
         
-<div id="ant-game-area" class="game-area">
+        <div id="tictactoe-game-area" class="game-area">
+            <h2>Hábitos y Rutinas 🧩: El Gato de la Disciplina</h2>
+            <p>¡Elige tu casilla (🍎)! La máquina (🌮) no se equivoca mucho. ¡Muestra tu disciplina!</p>
+            <div id="tictactoe-grid">
+                </div>
+            <div id="tictactoe-message" style="margin-top: 20px; font-weight: bold; font-size: 1.3em; min-height: 20px; color: #cc3333;"></div>
+            <button class="back-button" id="tictactoe-back-button" onclick="goBack()" style="margin-right: 10px;">Rendirme y aceptar la derrota</button>
+            <button class="back-button" onclick="initTictactoeGame()">Intentar de Nuevo</button>
+        </div>
+
+        
+        <div id="ant-game-area" class="game-area">
             <h2>Abundancia Financiera 💰</h2>
-            <p>¡Evita que las hormigas se roben tu dinero! Tócalas para aplastarlas.</p>
+            <p>¡Evita que las hormigas (más rápidas) roben tu dinero! Tócalas hasta sumar 15.</p>
             <div id="ant-game-area-canvas">
-                <span class="money-pile">💰</span>
+                <span class="money-pile" id="money-pile">💰</span>
             </div>
-            <div id="ant-score">Hormigas Aplastadas: 0</div>
+            <div id="ant-score">Hormigas Aplastadas: 0 / 15</div>
             <button class="back-button" onclick="goBack()">Volver al Menú</button>
         </div>
 
         
-<div id="swipe-game-area" class="game-area">
+        <div id="swipe-game-area" class="game-area">
             <h2>Bienestar Físico 💪</h2>
-            <p>¡Desliza a la derecha (✔️) para hábitos positivos, a la izquierda (❌) para los negativos! ¡Rápido!</p>
+            <p>¡Desliza a la derecha (✔️) para hábitos positivos, a la izquierda (❌) para los negativos! Suma más de 50 puntos para ganar.</p>
             <div id="swipe-game">
                 <div class="swipe-game-end" id="swipe-game-end-message"></div>
             </div>
@@ -220,19 +430,23 @@
         </div>
 
         
-<div id="ice-cream-game-area" class="game-area">
+        <div id="ice-cream-game-area" class="game-area">
             <h2>Relaciones Sanas ❤️</h2>
             <p>¡Toca rápido el helado para consumirlo antes de que se derrita!</p>
             <div id="ice-cream-game">
                 <div id="ice-cream-scoop"></div>
             </div>
             <div id="ice-cream-game-message">Toca: 0</div>
-            <div id="flower-message" style="display:none; font-size: 1.5em; font-weight: bold; color: #28a745; margin-top: 20px;">🌸 ¡Lo genuino siempre encuentra lo genuino! 🌸</div>
+            <div id="flower-message">
+                <span id="flower-reward" style="display:none; transition: all 0.5s;">
+                    ❤️ ¡Cualquiera se derrite por ti! ❤️
+                </span>
+            </div>
             <button class="back-button" onclick="goBack()">Volver al Menú</button>
         </div>
 
         
-<div id="travel-game-area" class="game-area">
+        <div id="travel-game-area" class="game-area">
             <h2>Lugares por Conocer ✈️</h2>
             <p>¡Presiona los botones para inspirarte en tu próxima aventura!</p>
             <div class="travel-buttons" style="display: flex; justify-content: center; gap: 15px;">
@@ -241,40 +455,90 @@
                 <div class="travel-btn" data-message="¡Una escapada a la playa para recargar energías!" style="font-size: 2em; background-color: #a2d2ff;">🏖️</div>
                 <div class="travel-btn" data-message="¡Explorar una nueva ciudad llena de historia y arte!" style="font-size: 2em; background-color: #a2d2ff;">🏛️</div>
                 <div class="travel-btn" data-message="¡Una aventura en la montaña para conectar con la naturaleza!" style="font-size: 2em; background-color: #a2d2ff;">⛰️</div>
+                <div class="travel-btn" data-message="¡Tienes tantas opciones increíbles!" style="font-size: 2em; background-color: #ff99c8; pointer-events: none;" id="final-travel-btn">❓</div>
             </div>
             <div id="travel-message" style="margin-top: 20px; min-height: 40px; font-size: 1.3em; font-weight: bold; color: #007bff;"></div>
             <button class="back-button" onclick="goBack()">Volver al Menú</button>
         </div>
 
         
-<div id="mirror-game-area" class="game-area">
+        <div id="mirror-game-area" class="game-area">
             <h2>Palabras con Impacto ✨</h2>
-            <p>¡Limpia el espejo frotando con tu dedo!</p>
+            <p>¡Limpia el vapor del espejo frotando con tu dedo para REVELAR el mensaje!</p>
             <canvas id="mirror-game-canvas" width="300" height="200"></canvas>
-            <div id="mirror-message" style="display:none; font-size: 1.5em; font-weight: bold; color: #8338ec; margin-top: 15px;">"Eres hermosa, inteligente y más que suficiente"</div>
+            <div id="mirror-message" style="display:none; font-size: 1.5em; font-weight: bold; color: #8338ec;">"Eres hermosa, inteligente y más que suficiente"</div>
             <button class="back-button" onclick="goBack()">Volver al Menú</button>
         </div>
-
+        
+    </div>
+    
+    <div id="final-message-overlay">
+        <div id="final-message-content">
+            <span style="font-size: 3em;">🌟</span>
+            <p style="font-size: 1.2em; margin-top: 20px;">
+                ¡Felicidades, Lau!
+            </p>
+            <p style="font-size: 1.5em; font-weight: bold;">
+                Sé que este año será increíblemente bueno, <br>
+                y me muero por verte lograrlo a lo grande.
+            </p>
+            <p style="font-size: 1.2em; color: #cc3333;">
+                Tu puedes Lau.
+            </p>
+        </div>
     </div>
 
     <script>
-        // Declaraciones globales (sin cambios en las variables)
+        // --- Variables Globales ---
         let currentGameId = null;
         let animationFrames = {}; 
+        
+        // Rastreador de juegos completados (7 juegos)
+        const completedGames = {
+            metas: false,
+            habitos: false,
+            abundancia: false,
+            bienestar: false,
+            relaciones: false,
+            viajes: false,
+            impacto: false
+        };
+
+        // Variables para Juego 1: Relacionar
+        const relationsData = [
+            { name: "Taylor Swift", emoji: "🎶", id: 1 },
+            { name: "Checo Pérez", emoji: "🏎️", id: 2 },
+            { name: "Bill Gates", emoji: "💻", id: 3 },
+            { name: "Oprah Winfrey", emoji: "🎤", id: 4 },
+            { name: "Elon Musk", emoji: "🚀", id: 5 },
+            { name: "Lau Heribia", emoji: "🩺", id: 6 } 
+        ];
+        let names = [];
+        let emojis = [];
+        let selectedName = null;
+        let selectedEmoji = null;
+        let matchesFound = 0;
+
+        // Variables para Juego 2: Gato (Tic-Tac-Toe)
+        let board = Array(9).fill(null);
+        const HUMAN_PLAYER = '🍎';
+        const AI_PLAYER = '🌮';
+        let gameActive = false;
+        const WINNING_COMBOS = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Filas
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columnas
+            [0, 4, 8], [2, 4, 6]             // Diagonales
+        ];
+
+        // Variables para Juego 3: Hormigas
+        const MAX_ANTS_SCORE = 15; 
         let antScore = 0;
         let antContainer = null;
-        let currentCards = [];
-        let cardIndex = 0;
-        let swipeScore = 0;
-        let swipeTimer = 30;
-        let isDragging = false;
-        let startX = 0;
-        let swipeGame = null;
-        let taps = 0;
-        const maxTaps = 30;
-        const initialHeight = 180;
-        let iceCreamScoop = null;
-        
+        let antMoveIntervals = {};
+        let antGameRunning = false;
+        let antMoveSpeed = 0.5; 
+
+        // Variables para Juego 4: Swipe
         const cardsData = [
             { emoji: '🍔', type: 'negative', text: 'Comida Chatarra' },
             { emoji: '📺', type: 'negative', text: 'Sedentarismo' },
@@ -287,13 +551,63 @@
             { emoji: '🧘‍♀️', type: 'positive', text: 'Meditar' },
             { emoji: '🥶', type: 'negative', text: 'Falta de Agua' }
         ];
+        let currentCards = [];
+        let cardIndex = 0;
+        let swipeScore = 0;
+        let swipeTimer = 30;
+        let isDragging = false;
+        let startX = 0;
+        let swipeGame = null;
+        let activeCard = null; 
 
-        // --- Funciones de Menú y Control (Mismo funcionamiento) ---
+        // Variables para Juego 5: Helado
+        let taps = 0;
+        const maxTaps = 30;
+        const initialHeight = 180;
+        let iceCreamScoop = null;
+
+        // Variables para Juego 6: Viajes
+        let travelClicks = new Set();
+        const totalDestinationButtons = 5;
+        let travelGameCompleted = false;
+
+        // --- Manejo de Menú y Control ---
+        
+        // Nueva función para marcar un juego como completado y revisar el estado general
+        function markGameCompleted(key) {
+            if (completedGames[key] === false) {
+                completedGames[key] = true;
+                
+                // Marcar el botón en el menú como completado
+                document.querySelector(`.menu-button[data-completion-key="${key}"]`).classList.add('completed');
+                
+                // Verificar si todos los juegos están completados
+                checkAllGamesCompleted();
+            }
+        }
+
+        function checkAllGamesCompleted() {
+            const allCompleted = Object.values(completedGames).every(status => status === true);
+            
+            if (allCompleted) {
+                setTimeout(showFinalMessage, 1000); 
+            }
+        }
+        
+        function showFinalMessage() {
+            document.getElementById('final-message-overlay').classList.add('show');
+            // Opcional: Deshabilitar el menú principal si quieres forzar la atención al mensaje
+            document.getElementById('main-menu').style.pointerEvents = 'none';
+        }
+
         function showGame(gameId) {
             document.getElementById('main-menu').style.display = 'none';
             if (currentGameId) {
-                document.getElementById(currentGameId).classList.remove('active');
-                resetGame(currentGameId);
+                const prevGameArea = document.getElementById(currentGameId);
+                if (prevGameArea) {
+                    prevGameArea.classList.remove('active');
+                    resetGame(currentGameId);
+                }
             }
             currentGameId = gameId;
             const gameArea = document.getElementById(gameId);
@@ -303,8 +617,11 @@
 
         function goBack() {
             if (currentGameId) {
-                document.getElementById(currentGameId).classList.remove('active');
-                resetGame(currentGameId);
+                const gameArea = document.getElementById(currentGameId);
+                if (gameArea) {
+                    gameArea.classList.remove('active');
+                    resetGame(currentGameId);
+                }
             }
             document.getElementById('main-menu').style.display = 'grid';
             currentGameId = null;
@@ -315,13 +632,15 @@
                 clearInterval(animationFrames[gameId]);
                 delete animationFrames[gameId];
             }
-
             switch (gameId) {
-                case 'fog-game-area':
-                    initFogGame();
+                case 'relation-game-area':
+                    initRelationGame();
+                    break;
+                case 'tictactoe-game-area':
+                    initTictactoeGame(); 
                     break;
                 case 'ant-game-area':
-                    initAntGame();
+                    initAntGame(); 
                     break;
                 case 'swipe-game-area':
                     initSwipeGame();
@@ -330,7 +649,7 @@
                     initIceCreamGame();
                     break;
                 case 'travel-game-area':
-                    initTravelGame();
+                    initTravelGame(); 
                     break;
                 case 'mirror-game-area':
                     initMirrorGame();
@@ -343,248 +662,509 @@
                 clearInterval(animationFrames[gameId]);
                 delete animationFrames[gameId];
             }
-            
             if (gameId === 'ant-game-area') {
-                if (antContainer) {
-                    antContainer.innerHTML = '<span class="money-pile">💰</span>';
-                }
-                document.getElementById('ant-score').innerText = 'Hormigas Aplastadas: 0';
+                resetAntGame(); 
             }
-            if (gameId === 'swipe-game-area') {
-                if (swipeGame) {
-                    swipeGame.innerHTML = '<div class="swipe-game-end" id="swipe-game-end-message"></div>';
-                }
+            if (gameId === 'swipe-game-area' && swipeGame) {
+                swipeGame.innerHTML = '<div class="swipe-game-end" id="swipe-game-end-message"></div>';
+                const message50 = document.getElementById('swipe-message-50');
+                if(message50) message50.remove();
+            }
+            if (gameId === 'ice-cream-game-area') {
+                document.getElementById('flower-reward').style.display = 'none';
+            }
+            if (gameId === 'relation-game-area') {
+                document.getElementById('relation-message').style.display = 'none';
+                selectedName = null;
+                selectedEmoji = null;
+                matchesFound = 0;
+                document.getElementById('relation-game-container').innerHTML = ''; 
+            }
+            if (gameId === 'tictactoe-game-area') {
+                gameActive = false;
+                document.getElementById('tictactoe-grid').innerHTML = '';
+                document.getElementById('tictactoe-back-button').innerText = 'Rendirme y aceptar la derrota';
+            }
+            if (gameId === 'travel-game-area') {
+                 travelClicks.clear(); 
+            }
+            if (gameId === 'mirror-game-area') {
+                 document.getElementById('mirror-message').style.display = 'none';
             }
         }
 
-        // --- Minijuego 1 (Niebla) y 7 (Espejo) ---
-        function setupWipeCanvas(canvasId, resultId, metasOrText, wipeThreshold, finishMessage) {
-            const canvas = document.getElementById(canvasId);
-            const ctx = canvas.getContext('2d');
-            const resultElement = document.getElementById(resultId);
+        // --- Juego 1: Relacionar Famosos ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
-            // ... (El código de inicialización de Canvas y dibujo es el mismo) ...
+        function handleMatchClick(element, type, id) {
+            document.querySelectorAll('.incorrect').forEach(el => el.classList.remove('incorrect'));
 
-             // 1. Dibujar el contenido/fondo
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = (canvasId === 'fog-game-canvas') ? '#a0c4ff' : 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.font = '24px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = (canvasId === 'fog-game-canvas') ? '#4a4a4a' : '#222';
-            
-            if (Array.isArray(metasOrText)) { 
-                metasOrText.forEach((meta, index) => {
-                    const y = (canvas.height / (metasOrText.length + 1)) * (index + 1);
-                    ctx.fillText(meta, canvas.width / 2, y);
-                });
-            } else { 
-                 ctx.font = '18px Arial';
-                 ctx.fillText("Limpia el espejo...", canvas.width / 2, canvas.height / 2);
+            if (type === 'name') {
+                if (selectedName) selectedName.classList.remove('selected');
+                selectedName = element;
+                selectedName.classList.add('selected');
+            } else if (type === 'emoji') {
+                if (selectedEmoji) selectedEmoji.classList.remove('selected');
+                selectedEmoji = element;
+                selectedEmoji.classList.add('selected');
             }
 
-            // 2. Cubrir con la "niebla"
-            ctx.fillStyle = (canvasId === 'fog-game-canvas') ? 'rgba(180, 180, 180, 0.9)' : 'rgba(176, 199, 199, 1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (selectedName && selectedEmoji) {
+                const nameId = parseInt(selectedName.getAttribute('data-id'));
+                const emojiId = parseInt(selectedEmoji.getAttribute('data-id'));
 
-            let isWiping = false;
-            
-            // Función de limpieza de niebla (mejorada la detección de eventos)
-            function wipe(e) {
-                if (!isWiping) return;
+                if (nameId === emojiId) {
+                    selectedName.classList.add('correct');
+                    selectedEmoji.classList.add('correct');
+                    selectedName.classList.remove('selected');
+                    selectedEmoji.classList.remove('selected');
+                    selectedName.onclick = null;
+                    selectedEmoji.onclick = null;
+                    
+                    matchesFound++;
+                    selectedName = null;
+                    selectedEmoji = null;
 
-                const rect = canvas.getBoundingClientRect();
-                // Usa e.changedTouches para obtener las coordenadas táctiles
-                const clientX = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientX : e.clientX;
-                const clientY = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientY : e.clientY;
-
-                const x = clientX - rect.left;
-                const y = clientY - rect.top;
-
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x, y, 25, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalCompositeOperation = 'source-over';
-
-                checkCompletion();
-            }
-            
-            function startWiping(e) {
-                e.preventDefault(); 
-                isWiping = true;
-                wipe(e);
-            }
-
-            function stopWiping() {
-                isWiping = false;
-            }
-
-            function checkCompletion() {
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                let opaquePixels = 0;
-                for (let i = 3; i < imageData.data.length; i += 4) {
-                    if (imageData.data[i] > 10) { 
-                        opaquePixels++;
+                    if (matchesFound === relationsData.length) {
+                        document.getElementById('relation-message').style.display = 'block';
+                        markGameCompleted('metas'); // <--- Marcado de juego
                     }
-                }
-                const totalPixels = (canvas.width * canvas.height);
-                const opacityPercent = opaquePixels / totalPixels;
-
-                if (opacityPercent < wipeThreshold) {
-                    resultElement.style.display = 'block';
-                    resultElement.innerText = finishMessage || resultElement.innerText;
-
-                    // Desvincular eventos para detener el juego
-                    canvas.removeEventListener('pointerdown', startWiping);
-                    canvas.removeEventListener('pointermove', wipe);
-                    canvas.removeEventListener('pointerup', stopWiping);
-                    canvas.removeEventListener('touchstart', startWiping);
-                    canvas.removeEventListener('touchmove', wipe);
-                    canvas.removeEventListener('touchend', stopWiping);
+                } else {
+                    selectedName.classList.add('incorrect');
+                    selectedEmoji.classList.add('incorrect');
+                    
+                    setTimeout(() => {
+                        selectedName.classList.remove('selected', 'incorrect');
+                        selectedEmoji.classList.remove('selected', 'incorrect');
+                        selectedName = null;
+                        selectedEmoji = null;
+                    }, 500);
                 }
             }
-            
-            // Limpieza inicial de listeners para evitar duplicados
-            canvas.removeEventListener('pointerdown', startWiping);
-            canvas.removeEventListener('pointermove', wipe);
-            canvas.removeEventListener('pointerup', stopWiping);
-            canvas.removeEventListener('touchstart', startWiping);
-            canvas.removeEventListener('touchmove', wipe);
-            canvas.removeEventListener('touchend', stopWiping);
-            
-            // Asignar listeners táctiles y de puntero
-            canvas.addEventListener('pointerdown', startWiping);
-            canvas.addEventListener('pointermove', wipe);
-            canvas.addEventListener('pointerup', stopWiping);
-            
-            canvas.addEventListener('touchstart', startWiping);
-            canvas.addEventListener('touchmove', wipe);
-            canvas.addEventListener('touchend', stopWiping);
         }
 
-        function initFogGame() {
-            const metas = ['🎯 Viajar', '📚 Aprender', '💡 Innovar', '💖 Amar'];
-            const finishMessage = '¡Tus metas están claras como el agua!';
-            document.getElementById('fog-game-result').innerText = '';
-            document.getElementById('fog-game-result').style.display = 'none';
-            setupWipeCanvas('fog-game-canvas', 'fog-game-result', metas, 0.2, finishMessage);
+        function initRelationGame() {
+            names = shuffleArray(relationsData.map(r => ({ name: r.name, id: r.id })));
+            emojis = shuffleArray(relationsData.map(r => ({ emoji: r.emoji, id: r.id })));
+            
+            const container = document.getElementById('relation-game-container');
+            container.innerHTML = '';
+            matchesFound = 0;
+
+            for (let i = 0; i < names.length; i++) {
+                const pairDiv = document.createElement('div');
+                pairDiv.classList.add('match-pair');
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('match-name');
+                nameDiv.innerText = names[i].name;
+                nameDiv.setAttribute('data-id', names[i].id);
+                nameDiv.onclick = function() { handleMatchClick(this, 'name', names[i].id); };
+
+                const emojiDiv = document.createElement('div');
+                emojiDiv.classList.add('match-emoji');
+                emojiDiv.innerText = emojis[i].emoji;
+                emojiDiv.setAttribute('data-id', emojis[i].id);
+                emojiDiv.onclick = function() { handleMatchClick(this, 'emoji', emojis[i].id); };
+
+                pairDiv.appendChild(nameDiv);
+                pairDiv.appendChild(emojiDiv);
+                container.appendChild(pairDiv);
+            }
         }
 
-        function initMirrorGame() {
-            const finishMessage = '';
-            document.getElementById('mirror-message').style.display = 'none';
-            setupWipeCanvas('mirror-game-canvas', 'mirror-message', "Vaho", 0.1, finishMessage);
-        }
 
-        // --- Minijuego 3: Abundancia Financiera (Hormigas) ---
-        function createAnt() {
-            // ... (El código de createAnt es el mismo, pero usa la variable antContainer) ...
-            const ant = document.createElement('div');
-            ant.classList.add('ant');
-            ant.innerText = '🐜';
-            
-            ant.style.left = `${Math.random() * (antContainer.offsetWidth - 30)}px`;
-            ant.style.top = `${Math.random() * (antContainer.offsetHeight - 30)}px`;
-
-            const targetX = Math.random() * (antContainer.offsetWidth - 30);
-            const targetY = Math.random() * (antContainer.offsetHeight - 30);
-            const duration = Math.random() * 2 + 1.5;
-            
-            ant.style.transitionDuration = `${duration}s`;
-            ant.style.transform = `translate(${targetX - parseInt(ant.style.left)}px, ${targetY - parseInt(ant.style.top)}px)`;
-
-            antContainer.appendChild(ant);
-
-            setTimeout(() => {
-                if (ant.parentNode === antContainer) {
-                    antContainer.removeChild(ant);
-                }
-            }, duration * 1000);
-
-            ant.addEventListener('pointerdown', function(e) {
-                e.stopPropagation(); 
-                if (ant.innerText !== '💥') {
-                    antScore++;
-                    document.getElementById('ant-score').innerText = `Hormigas Aplastadas: ${antScore}`;
-                    ant.innerText = '💥';
-                    ant.style.pointerEvents = 'none';
-                    setTimeout(() => antContainer.removeChild(ant), 500);
-                }
+        // --- Juego 2: Gato (Tic-Tac-Toe) - AI con posibilidad de error (20%) ---
+        function checkWinner(currentBoard, player) {
+            return WINNING_COMBOS.some(combo => {
+                return combo.every(index => {
+                    return currentBoard[index] === player;
+                });
             });
         }
 
+        function getAvailableMoves(currentBoard) {
+            return currentBoard
+                .map((cell, index) => cell === null ? index : null)
+                .filter(index => index !== null);
+        }
+
+        function minimax(newBoard, player) {
+            const availSpots = getAvailableMoves(newBoard);
+
+            if (checkWinner(newBoard, HUMAN_PLAYER)) {
+                return { score: -10 };
+            } else if (checkWinner(newBoard, AI_PLAYER)) {
+                return { score: 10 };
+            } else if (availSpots.length === 0) {
+                return { score: 0 };
+            }
+
+            const moves = [];
+            for (let i = 0; i < availSpots.length; i++) {
+                const move = {};
+                move.index = availSpots[i];
+                newBoard[availSpots[i]] = player;
+
+                if (player === AI_PLAYER) {
+                    const result = minimax(newBoard, HUMAN_PLAYER);
+                    move.score = result.score;
+                } else {
+                    const result = minimax(newBoard, AI_PLAYER);
+                    move.score = result.score;
+                }
+
+                newBoard[availSpots[i]] = null; 
+                moves.push(move);
+            }
+
+            let bestMoveIndex;
+            if (player === AI_PLAYER) {
+                let bestScore = -10000;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score > bestScore) {
+                        bestScore = moves[i].score;
+                        bestMoveIndex = i;
+                    }
+                }
+            } else {
+                let bestScore = 10000;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score < bestScore) {
+                        bestScore = moves[i].score;
+                        bestMoveIndex = i;
+                    }
+                }
+            }
+            return moves[bestMoveIndex];
+        }
+        
+        function getAiMove() {
+            // 1. Prioridad: Revisar si la IA puede ganar o si el humano puede ganar (y bloquearlo)
+            const moves = getAvailableMoves(board);
+            let winningMove = -1;
+            let blockingMove = -1;
+
+            for (let i = 0; i < moves.length; i++) {
+                const move = moves[i];
+                // Check winning
+                board[move] = AI_PLAYER;
+                if (checkWinner(board, AI_PLAYER)) {
+                    winningMove = move;
+                }
+                board[move] = HUMAN_PLAYER;
+                if (checkWinner(board, HUMAN_PLAYER)) {
+                    blockingMove = move;
+                }
+                board[move] = null; // Reset
+            }
+
+            if (winningMove !== -1) return { index: winningMove };
+            if (blockingMove !== -1) return { index: blockingMove };
+
+            // 2. Posibilidad de error (20% de las veces en otros casos)
+            if (Math.random() < 0.20) {
+                // Mover aleatorio si no hay jugada crítica
+                const randomIndex = Math.floor(Math.random() * moves.length);
+                return { index: moves[randomIndex] };
+            }
+            
+            // 3. Jugar Minimax (el mejor movimiento)
+            return minimax(board, AI_PLAYER);
+        }
+
+
+        function aiTurn() {
+            if (!gameActive) return;
+            const move = getAiMove();
+            if (move && move.index !== undefined) {
+                makeMove(move.index, AI_PLAYER);
+            }
+        }
+
+        function makeMove(index, player) {
+            if (board[index] === null && gameActive) {
+                board[index] = player;
+                document.getElementById(`cell-${index}`).innerText = player;
+
+                const messageEl = document.getElementById('tictactoe-message');
+                const backButton = document.getElementById('tictactoe-back-button');
+
+                if (checkWinner(board, player)) {
+                    messageEl.style.color = player === HUMAN_PLAYER ? '#28a745' : '#cc3333';
+                    messageEl.innerText = player === HUMAN_PLAYER ? '🎉 ¡GANASTE! (Increíble)' : '🤖 ¡GANÓ EL TACO! (Sigue intentando)';
+                    gameActive = false;
+                    
+                    if (player === HUMAN_PLAYER) {
+                         backButton.innerText = '¡Lo logré! Volver al Menú';
+                         markGameCompleted('habitos'); // <--- Marcado de juego (Solo si gana)
+                    }
+                } else if (getAvailableMoves(board).length === 0) {
+                    messageEl.style.color = '#007bff';
+                    messageEl.innerText = '🤝 ¡EMPATE! (La disciplina es un balance)';
+                    gameActive = false;
+                    markGameCompleted('habitos'); // <--- Marcado de juego (Empate también cuenta)
+                } else if (player === HUMAN_PLAYER) {
+                    setTimeout(aiTurn, 300);
+                }
+            }
+        }
+
+        function handleCellClick(index) {
+            if (gameActive && board[index] === null) {
+                makeMove(index, HUMAN_PLAYER);
+            }
+        }
+
+        function initTictactoeGame() {
+            board = Array(9).fill(null);
+            gameActive = true;
+            const grid = document.getElementById('tictactoe-grid');
+            const messageEl = document.getElementById('tictactoe-message');
+            const backButton = document.getElementById('tictactoe-back-button');
+
+            grid.innerHTML = '';
+            messageEl.innerText = 'Tu turno (🍎)';
+            messageEl.style.color = '#cc3333';
+            backButton.innerText = 'Rendirme y aceptar la derrota'; 
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('tictactoe-cell');
+                cell.id = `cell-${i}`;
+                cell.onclick = () => handleCellClick(i);
+                grid.appendChild(cell);
+            }
+
+            if (Math.random() > 0.5) {
+                const center = 4;
+                if (board[center] === null) {
+                    makeMove(center, AI_PLAYER);
+                    messageEl.innerText = 'El Taco 🌮 empieza. Tu turno (🍎)';
+                }
+            }
+        }
+
+
+        // --- Juego 3: Abundancia Financiera (Modificado para Recuperación) ---
+        function resetAntGame() {
+            for (const key in antMoveIntervals) {
+                clearInterval(antMoveIntervals[key]);
+            }
+            antMoveIntervals = {};
+            if (animationFrames['ant-game-area']) {
+                clearTimeout(animationFrames['ant-game-area']);
+                delete animationFrames['ant-game-area'];
+            }
+            antGameRunning = false;
+            antScore = 0;
+            antMoveSpeed = 0.5;
+            // Limpiar mensaje de game over si existe
+            const messageContainer = document.getElementById('ant-game-message-container');
+            if (messageContainer) messageContainer.remove();
+            
+            document.querySelectorAll('.ant').forEach(ant => ant.remove());
+        }
+
+        function getAntSpeed() {
+             if (antScore >= 14) return 2.8; 
+             if (antScore >= 12) return 2.0; 
+             if (antScore >= 8) return 1.3; 
+             return 0.5 + antScore * 0.1;   
+        }
+
+        function showAntGameOverMessage() {
+            resetAntGame();
+            
+            const messageContainer = document.createElement('div');
+            messageContainer.id = 'ant-game-message-container';
+            messageContainer.innerHTML = `
+                <span style="font-size: 1.5em; color: red;">💸 ¡La hormiga robó el dinero! Juego Terminado.</span>
+                <button class="back-button" onclick="initAntGame()">Recuperar Dinero (Reiniciar Juego)</button>
+            `;
+            antContainer.appendChild(messageContainer);
+        }
+
+        function moveAnt(ant) {
+            if (!antGameRunning) {
+                clearInterval(antMoveIntervals[ant.id]);
+                return;
+            }
+            
+            let currentX = parseFloat(ant.style.left) || 0;
+            let currentY = parseFloat(ant.style.top) || 0;
+            
+            if (!antContainer) return;
+            
+            const speed = getAntSpeed();
+
+            const targetX = antContainer.offsetWidth / 2 - 15; 
+            const targetY = antContainer.offsetHeight / 2 - 15;
+            
+            const dx = targetX - currentX;
+            const dy = targetY - currentY;
+            
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const step = Math.min(distance, speed); 
+            
+            if (distance > 0) {
+                ant.style.left = `${currentX + (dx / distance) * step}px`;
+                ant.style.top = `${currentY + (dy / distance) * step}px`;
+            }
+
+            // Colisión 
+            if (distance < 30) {
+                showAntGameOverMessage(); 
+            }
+        }
+        
+        function startAntMovement(ant) {
+            antMoveIntervals[ant.id] = setInterval(() => moveAnt(ant), 25); 
+        }
+
+        function createAnt(immediate = false) {
+            if (!antGameRunning || antScore >= MAX_ANTS_SCORE) return;
+
+            const ant = document.createElement('div');
+            ant.classList.add('ant');
+            ant.innerText = '🐜';
+            ant.id = `ant-${Date.now()}-${Math.random()}`;
+            
+            const edge = Math.floor(Math.random() * 4); 
+            const containerWidth = antContainer.offsetWidth;
+            const containerHeight = antContainer.offsetHeight;
+
+            if (edge === 0) { ant.style.left = '-30px'; ant.style.top = `${Math.random() * containerHeight}px`; }
+            else if (edge === 1) { ant.style.left = `${containerWidth}px`; ant.style.top = `${Math.random() * containerHeight}px`; }
+            else if (edge === 2) { ant.style.top = '-30px'; ant.style.left = `${Math.random() * containerWidth}px`; }
+            else { ant.style.top = `${containerHeight}px`; ant.style.left = `${Math.random() * containerWidth}px`; }
+
+            antContainer.appendChild(ant);
+            
+            startAntMovement(ant);
+
+            ant.addEventListener('pointerdown', function(e) {
+                e.stopPropagation(); 
+                if (ant.innerText !== '💥' && antGameRunning) {
+                    antScore++;
+                    document.getElementById('ant-score').innerText = `Hormigas Aplastadas: ${antScore} / ${MAX_ANTS_SCORE}`;
+                    ant.innerText = '💥';
+                    ant.style.pointerEvents = 'none';
+                    ant.style.transition = 'opacity 0.3s';
+                    ant.style.opacity = '0';
+                    clearInterval(antMoveIntervals[ant.id]);
+                    delete antMoveIntervals[ant.id];
+                    
+                    setTimeout(() => { 
+                        if (ant.parentNode === antContainer) antContainer.removeChild(ant); 
+                    }, 300);
+
+                    if (antScore >= MAX_ANTS_SCORE) {
+                        endAntGame(true);
+                    }
+                }
+            });
+        }
+        
+        function endAntGame(won) {
+            resetAntGame();
+            if (won) {
+                 antContainer.innerHTML = '<span style="font-size: 1.5em; color: green;">🎉 ¡Lograste la Abundancia Financiera!</span>';
+                 document.getElementById('ant-score').innerText = `Hormigas Aplastadas: ${MAX_ANTS_SCORE} / ${MAX_ANTS_SCORE}`;
+                 // Mostrar el dinero al ganar
+                 antContainer.innerHTML += '<span class="money-pile" id="money-pile">💰</span>';
+                 markGameCompleted('abundancia'); // <--- Marcado de juego
+            }
+        }
+
+
         function antLoop() {
-            createAnt();
-            const delay = Math.max(500, 2000 - antScore * 50);
-            animationFrames['ant-game-area'] = setTimeout(antLoop, delay);
+            if (!antGameRunning || antScore >= MAX_ANTS_SCORE) return;
+            
+            if (antScore >= MAX_ANTS_SCORE - 6 && antScore < MAX_ANTS_SCORE) {
+                // Generar 6 hormigas de golpe para los puntos finales
+                for(let i=0; i<6; i++) {
+                    setTimeout(() => createAnt(true), i * 50); 
+                }
+            } else {
+                createAnt();
+                const delay = Math.max(700, 2000 - antScore * 100); 
+                animationFrames['ant-game-area'] = setTimeout(antLoop, delay);
+            }
         }
 
         function initAntGame() {
-            antContainer = document.getElementById('ant-game-area-canvas'); // Asignar al iniciar
-            antScore = 0;
-            document.getElementById('ant-score').innerText = 'Hormigas Aplastadas: 0';
-            antContainer.innerHTML = '<span class="money-pile">💰</span>';
+            resetAntGame(); 
+            antContainer = document.getElementById('ant-game-area-canvas'); 
+            document.getElementById('ant-score').innerText = `Hormigas Aplastadas: 0 / ${MAX_ANTS_SCORE}`;
+            antContainer.innerHTML = '<span class="money-pile" id="money-pile">💰</span>';
+            antGameRunning = true;
             antLoop();
         }
-        
-        // --- Minijuego 4: Bienestar Físico (Deslizar Tarjetas) ---
+
+        // --- Funciones del Juego 4: Bienestar Físico (Corregido Swipe) ---
+
         function createCard(data, index) {
-            // ... (El código de createCard es el mismo, pero usa la variable swipeGame) ...
             const card = document.createElement('div');
             card.classList.add('swipe-card');
-            card.style.zIndex = cardsData.length - index;
-            card.innerHTML = data ? `${data.emoji}<p>${data.text}</p>` : '';
-            card.dataset.type = data ? data.type : '';
+            card.style.zIndex = 100 - index;
+            card.style.transform = `scale(${1 - index * 0.05}) translateY(${index * 5}px)`;
+            card.dataset.type = data.type;
+            card.id = index === 0 ? 'active-card' : '';
+            card.innerHTML = `<span>${data.emoji}</span><p>${data.text}</p>`;
 
-            if (index === 0 && data) {
-                card.id = 'active-card';
-                // Usar pointer events para compatibilidad táctil
+            if (index === 0) {
+                activeCard = card;
                 card.addEventListener('pointerdown', startSwipe);
                 card.addEventListener('pointermove', moveSwipe);
                 card.addEventListener('pointerup', endSwipe);
                 card.addEventListener('pointercancel', endSwipe);
+                // Fallbacks para asegurar compatibilidad con touch (aunque pointer events son mejores)
+                card.addEventListener('touchstart', startSwipe);
+                card.addEventListener('touchmove', moveSwipe);
+                card.addEventListener('touchend', endSwipe);
+                card.addEventListener('touchcancel', endSwipe);
             }
             return card;
         }
 
-        function renderSwipeCards() {
-            swipeGame.innerHTML = '';
-            currentCards.slice(cardIndex, cardIndex + 3).reverse().forEach((data, i) => {
-                swipeGame.appendChild(createCard(data, i));
-            });
-             swipeGame.appendChild(document.getElementById('swipe-game-end-message'));
+        function showCheerMessage() {
+            const message = document.createElement('div');
+            message.id = 'swipe-message-50';
+            message.classList.add('score-message-50');
+            message.innerHTML = "¡Tú puedes, no es tan difícil! Yo te echo porras con una copa de vino 🍷 y palomitas 🍿.";
+            document.getElementById('swipe-game-area').appendChild(message);
+            
+            setTimeout(() => {
+                message.style.opacity = '1';
+            }, 50);
+
+            // DURACIÓN AUMENTADA A 6000 MS (6 segundos)
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 500);
+            }, 6000); 
         }
 
-        function startSwipe(e) {
-            if (swipeTimer === 0) return;
-            isDragging = true;
-            startX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
-            e.target.style.transition = 'none';
-        }
-
-        function moveSwipe(e) {
-            if (!isDragging) return;
-            const currentCard = document.getElementById('active-card');
-            const currentX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
-            const deltaX = currentX - startX;
-
-            currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX / 20}deg)`;
-            currentCard.style.opacity = 1 - (Math.abs(deltaX) / 400);
-        }
 
         function endSwipe(e) {
-            if (!isDragging) return;
+            if (!isDragging || !activeCard) return;
             isDragging = false;
-            const currentCard = document.getElementById('active-card');
-            if (!currentCard) return;
-
-            currentCard.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
             
-            const transform = currentCard.style.transform;
-            const match = transform.match(/translateX\((.*?)px\)/);
-            const deltaX = match ? parseFloat(match[1]) : 0;
+            // Si el evento no es de terminación (up/end/cancel), salir
+            if (e.type !== 'pointerup' && e.type !== 'pointercancel' && e.type !== 'touchend' && e.type !== 'touchcancel') return;
+            
+            // Obtener la coordenada final de forma robusta
+            const finalX = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientX : e.clientX;
+            const deltaX = finalX - startX;
+
+            activeCard.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
             
             let action = '';
 
@@ -592,22 +1172,29 @@
             else if (deltaX < -80) { action = 'negative'; }
 
             if (action) {
-                const cardType = currentCard.dataset.type;
+                const cardType = activeCard.dataset.type;
                 
+                let oldScore = swipeScore;
                 if ((action === 'positive' && cardType === 'positive') || (action === 'negative' && cardType === 'negative')) {
                     swipeScore += 10;
-                    currentCard.style.backgroundColor = '#d4edda';
+                    activeCard.style.backgroundColor = '#d4edda';
                 } else {
                     swipeScore -= 5;
-                    currentCard.style.backgroundColor = '#f8d7da';
+                    activeCard.style.backgroundColor = '#f8d7da';
                 }
                 document.getElementById('swipe-score').innerText = `Puntaje: ${swipeScore}`;
                 
-                currentCard.style.transform = `translateX(${(action === 'positive' ? 500 : -500)}px) rotate(${action === 'positive' ? 30 : -30}deg)`;
+                if (swipeScore >= 50 && oldScore < 50) {
+                    showCheerMessage();
+                }
+                
+                activeCard.style.transform = `translateX(${(action === 'positive' ? 500 : -500)}px) rotate(${action === 'positive' ? 30 : -30}deg)`;
                 
                 setTimeout(() => {
                     cardIndex++;
-                    if (cardIndex < cardsData.length) {
+                    activeCard.remove(); 
+                    activeCard = null; 
+                    if (cardIndex < currentCards.length) {
                          renderSwipeCards();
                     } else {
                         endSwipeGame();
@@ -615,9 +1202,33 @@
                 }, 300);
 
             } else {
-                currentCard.style.transform = 'translateX(0) rotate(0deg)';
-                currentCard.style.opacity = 1;
+                activeCard.style.transform = 'translateX(0) rotate(0deg)';
+                activeCard.style.opacity = 1;
             }
+        }
+
+
+        function startSwipe(e) {
+            if (swipeTimer === 0 || !activeCard) return;
+            isDragging = true;
+            const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+            startX = clientX;
+            activeCard.style.transition = 'none';
+        }
+
+        function moveSwipe(e) {
+            if (!isDragging || !activeCard) return;
+            
+            const currentX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+            const deltaX = currentX - startX;
+
+            // Prevenir el scroll solo si el movimiento horizontal es significativo
+            if (e.type.startsWith('touch') && Math.abs(deltaX) > 5) {
+                e.preventDefault();
+            }
+
+            activeCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX / 20}deg)`;
+            activeCard.style.opacity = 1 - (Math.abs(deltaX) / 400);
         }
 
         function swipeCountdown() {
@@ -635,43 +1246,61 @@
         function endSwipeGame() {
             const messageElement = document.getElementById('swipe-game-end-message');
             messageElement.style.display = 'flex';
-            messageElement.innerHTML = `
-                ¡Tiempo agotado! <br>
-                Tu puntaje final es: **${swipeScore}** <br><br>
-                ${swipeScore >= 50 ? '¡Excelente Dra. Lau, tu bienestar físico está en marcha!' : '¡A seguir practicando, la disciplina no es fácil!'}
-            `;
             
-            const activeCard = document.getElementById('active-card');
             if (activeCard) {
                  activeCard.removeEventListener('pointerdown', startSwipe);
                  activeCard.removeEventListener('pointermove', moveSwipe);
                  activeCard.removeEventListener('pointerup', endSwipe);
                  activeCard.removeEventListener('pointercancel', endSwipe);
+                 activeCard.removeEventListener('touchstart', startSwipe);
+                 activeCard.removeEventListener('touchmove', moveSwipe);
+                 activeCard.removeEventListener('touchend', endSwipe);
+                 activeCard.removeEventListener('touchcancel', endSwipe);
+            }
+
+            messageElement.innerHTML = `
+                ¡Tiempo agotado! <br>
+                Tu puntaje final es: **${swipeScore}** <br><br>
+                ${swipeScore >= 50 ? '¡Meta Cumplida! Tu bienestar físico está en marcha.' : '¡A seguir practicando, la disciplina no es fácil!'}
+            `;
+            
+            if (swipeScore >= 50) {
+                 markGameCompleted('bienestar'); // <--- Marcado de juego
             }
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+        function renderSwipeCards() {
+            Array.from(swipeGame.children).forEach(child => {
+                if (child.id !== 'swipe-game-end-message') {
+                    child.remove();
+                }
+            });
+
+            currentCards.slice(cardIndex, cardIndex + 3).reverse().forEach((data, i) => {
+                swipeGame.appendChild(createCard(data, i));
+            });
+            
+            swipeGame.appendChild(document.getElementById('swipe-game-end-message'));
         }
 
         function initSwipeGame() {
-            swipeGame = document.getElementById('swipe-game'); // Asignar al iniciar
-            currentCards = shuffleArray([...cardsData]);
+            swipeGame = document.getElementById('swipe-game'); 
+            currentCards = shuffleArray([...cardsData, ...cardsData, ...cardsData]); 
             cardIndex = 0;
             swipeScore = 0;
             swipeTimer = 30;
+            isDragging = false;
+            activeCard = null;
+
             document.getElementById('swipe-timer').innerText = `Tiempo: ${swipeTimer}s`;
             document.getElementById('swipe-score').innerText = `Puntaje: 0`;
             document.getElementById('swipe-game-end-message').style.display = 'none';
+
             renderSwipeCards();
             swipeCountdown();
         }
-
-        // --- Minijuego 5: Relaciones Sanas (Helado) ---
+        
+        // --- Juego 5: Relaciones Sanas ---
         function updateIceCreamScoop() {
             const remainingTaps = maxTaps - taps;
             const newHeight = Math.max(0, (remainingTaps / maxTaps) * initialHeight);
@@ -684,7 +1313,10 @@
 
             if (taps >= maxTaps) {
                 iceCreamScoop.style.pointerEvents = 'none';
-                document.getElementById('flower-message').style.display = 'block';
+                document.getElementById('flower-reward').style.display = 'block'; 
+                markGameCompleted('relaciones'); // <--- Marcado de juego
+            } else {
+                document.getElementById('flower-reward').style.display = 'none';
             }
         }
 
@@ -696,50 +1328,190 @@
         }
 
         function initIceCreamGame() {
-            iceCreamScoop = document.getElementById('ice-cream-scoop'); // Asignar al iniciar
+            iceCreamScoop = document.getElementById('ice-cream-scoop'); 
             taps = 0;
             iceCreamScoop.style.pointerEvents = 'auto';
-            document.getElementById('flower-message').style.display = 'none';
+            document.getElementById('flower-reward').style.display = 'none';
             updateIceCreamScoop();
 
             iceCreamScoop.removeEventListener('pointerdown', handleIceCreamTap); 
             iceCreamScoop.addEventListener('pointerdown', handleIceCreamTap); 
         }
-
-        // --- Minijuego 6: Lugares que quieres conocer (Botones de Experiencias) ---
+        
+        // --- Juego 6: Lugares por Conocer ---
         function initTravelGame() {
             const buttons = document.querySelectorAll('#travel-game-area .travel-btn');
             const messageDisplay = document.getElementById('travel-message');
+            const finalButton = document.getElementById('final-travel-btn');
+            
             messageDisplay.innerText = '';
+            travelClicks.clear();
+            travelGameCompleted = false;
 
-            buttons.forEach(button => {
-                 button.onclick = function() {
-                    messageDisplay.innerText = this.getAttribute('data-message');
-                };
+            finalButton.style.pointerEvents = 'none';
+            finalButton.style.backgroundColor = '#ccc';
+            finalButton.onclick = null;
+            
+            buttons.forEach((button, index) => {
+                 if (index < totalDestinationButtons) { 
+                     button.dataset.index = index;
+                     button.style.pointerEvents = 'auto'; 
+                     button.style.backgroundColor = '#a2d2ff';
+
+                     button.onclick = function() {
+                        messageDisplay.innerText = this.getAttribute('data-message');
+                        travelClicks.add(index);
+                        
+                        if (travelClicks.size === totalDestinationButtons) {
+                            finalButton.style.pointerEvents = 'auto';
+                            finalButton.style.backgroundColor = '#ff99c8';
+                            finalButton.onclick = function() {
+                                messageDisplay.innerText = "¿Por cuál comenzamos?";
+                                buttons.forEach(btn => btn.style.pointerEvents = 'none'); 
+                                markGameCompleted('viajes'); // <--- Marcado de juego
+                            };
+                        }
+                    };
+                 }
             });
         }
     
+        // --- Juego 7: Palabras con Impacto ---
+        function setupWipeCanvas(canvasId, resultId, wipeThreshold) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const resultElement = document.getElementById(resultId);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#333';
+            ctx.fillText(resultElement.innerText.replace(/"/g, ''), canvas.width / 2, canvas.height / 2); 
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = 176; 
+                data[i + 1] = 199; 
+                data[i + 2] = 199; 
+                data[i + 3] = 255; 
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            let isWiping = false;
+            
+            function wipe(e) {
+                if (!isWiping) return;
+                e.preventDefault();
+                
+                const rect = canvas.getBoundingClientRect();
+                const clientX = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientX : e.clientX;
+                const clientY = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0].clientY : e.clientY;
+
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI * 2); 
+                ctx.fillStyle = 'rgba(0, 0, 0, 1)'; 
+                ctx.fill();
+                
+                ctx.globalCompositeOperation = 'source-over';
+
+                checkCompletion();
+            }
+            
+            function startWiping(e) {
+                e.preventDefault(); 
+                isWiping = true;
+                wipe(e);
+            }
+
+            function stopWiping() {
+                isWiping = false;
+            }
+
+            function checkCompletion() {
+                const currentImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let opaquePixels = 0;
+                
+                for (let i = 3; i < currentImageData.data.length; i += 4) {
+                    if (currentImageData.data[i] > 10) { 
+                        opaquePixels++;
+                    }
+                }
+                const totalPixels = (canvas.width * canvas.height);
+                const opacityPercent = opaquePixels / totalPixels;
+
+                if (opacityPercent < wipeThreshold) {
+                    resultElement.style.display = 'block';
+
+                    canvas.removeEventListener('pointerdown', startWiping);
+                    canvas.removeEventListener('pointermove', wipe);
+                    canvas.removeEventListener('pointerup', stopWiping);
+                    canvas.removeEventListener('touchstart', startWiping);
+                    canvas.removeEventListener('touchmove', wipe);
+                    canvas.removeEventListener('touchend', stopWiping);
+                    
+                    markGameCompleted('impacto'); // <--- Marcado de juego
+                }
+            }
+            
+            // Limpieza y Asignación de Listeners
+            canvas.removeEventListener('pointerdown', startWiping);
+            canvas.removeEventListener('pointermove', wipe);
+            canvas.removeEventListener('pointerup', stopWiping);
+            canvas.removeEventListener('touchstart', startWiping);
+            canvas.removeEventListener('touchmove', wipe);
+            canvas.removeEventListener('touchend', stopWiping);
+            
+            canvas.addEventListener('pointerdown', startWiping);
+            canvas.addEventListener('pointermove', wipe);
+            canvas.addEventListener('pointerup', stopWiping);
+            canvas.addEventListener('touchstart', startWiping);
+            canvas.addEventListener('touchmove', wipe);
+            canvas.addEventListener('touchend', stopWiping);
+        }
+
+
+        function initMirrorGame() {
+            document.getElementById('mirror-message').style.display = 'none';
+            const canvas = document.getElementById('mirror-game-canvas');
+            if (canvas) {
+                canvas.width = 300; 
+                canvas.height = 200;
+            }
+            setupWipeCanvas('mirror-game-canvas', 'mirror-message', 0.1); 
+        }
+
         // *** FUNCIÓN DE INICIALIZACIÓN FORZADA ***
         function initializeAll() {
              const menuButtons = document.querySelectorAll('.menu-button');
 
              menuButtons.forEach(button => {
                  const gameId = button.getAttribute('data-game-id');
+                 const key = button.getAttribute('data-completion-key');
                  if (gameId) {
-                     // Enlaza la función showGame al evento 'click' de cada botón
+                     button.removeEventListener('click', () => showGame(gameId)); 
                      button.addEventListener('click', () => showGame(gameId));
+                 }
+                 // Aplicar estilo de completado si ya lo está (útil si se guarda el estado en localStorage)
+                 if (completedGames[key]) {
+                      button.classList.add('completed');
                  }
              });
              
              initTravelGame(); 
         }
 
-        // Llama a la inicialización después de que el DOM esté completamente cargado.
         document.addEventListener('DOMContentLoaded', initializeAll);
-
-        // Fallback: Si DOMContentLoaded falla por algún motivo (entornos muy restrictivos),
-        // intenta ejecutar la inicialización también al finalizar la carga de la ventana.
-        window.onload = initializeAll;
+        window.onload = initializeAll; 
     </script>
 </body>
 </html>
