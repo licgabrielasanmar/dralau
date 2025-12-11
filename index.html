@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION BOARD 2026 by Lau</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        h1 {
+            color: #8338ec;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            color: #555;
+            padding: 0 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .menu-button {
+            background-color: #ff99c8;
+            color: white;
+            padding: 25px 15px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 80px;
+        }
+        .menu-button:active {
+            transform: translateY(-2px);
+        }
+        .game-area {
+            display: none;
+            margin-top: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        .game-area.active {
+            display: block;
+        }
+        .back-button {
+            background-color: #8338ec;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+        .back-button:active {
+            background-color: #6a0dad;
+        }
+
+        /* Estilos de los minijuegos (sin cambios mayores) */
+        #fog-game-canvas, #mirror-game-canvas {
+            border: 1px solid #ccc;
+            touch-action: none;
+        }
+        #ant-game-area-canvas {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ccc;
+            background-color: #e0f2f7;
+            overflow: hidden;
+        }
+        .ant {
+            position: absolute;
+            font-size: 2em;
+            z-index: 10;
+            transition: transform 0.5s linear;
+        }
+        .money-pile {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            z-index: 0;
+        }
+        #swipe-game {
+            position: relative;
+            width: 300px;
+            height: 350px;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .swipe-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            touch-action: none;
+        }
+        #ice-cream-game {
+            width: 200px;
+            height: 300px;
+            border-radius: 10px 10px 100px 100px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+        #ice-cream-scoop {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            transition: height 0.05s linear, width 0.05s linear, top 0.05s linear;
+            background-color: #ffdab9;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VISION BOARD 2026 by Lau</h1>
+        <p>¡Será un año lleno de sorpresas, cosas bonitas y muchos logros, porque eres una persona extraordinaria!</p>
+
+        <div class="menu-grid" id="main-menu">
+            <div class="menu-button" data-game-id="fog-game-area">Metas Claras 🎯</div>
+            <div class="menu-button" data-game-id="puzzle-game-area">Hábitos y Rutinas 🧩</div>
+            <div class="menu-button" data-game-id="ant-game-area">Abundancia Financiera 💰</div>
+            <div class="menu-button" data-game-id="swipe-game-area">Bienestar Físico 💪</div>
+            <div class="menu-button" data-game-id="ice-cream-game-area">Relaciones Sanas ❤️</div>
+            <div class="menu-button" data-game-id="travel-game-area">Lugares por Conocer ✈️</div>
+            <div class="menu-button" data-game-id="mirror-game-area">Palabras con Impacto ✨</div>
+        </div>
+
+        
+<div id="fog-game-area" class="game-area">
+            <h2>Metas Claras 🎯</h2>
+            <p>¡Limpia la niebla frotando rápido con tu dedo!</p>
+            <canvas id="fog-game-canvas" width="300" height="200"></canvas>
+            <div id="fog-game-result"></div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+        
+<div id="puzzle-game-area" class="game-area">
+            <h2>Hábitos y Rutinas 🧩</h2>
+            <p>¡Arma el rompecabezas para construir tus hábitos! (Visualización)</p>
+             <div style="font-size: 1.5em; margin-top: 50px; color: #007bff;">
+                <p>Tu puedes lograrlo todo Lau</p>
+                <p>¡Usa esta sección para visualizar cómo cada pequeño paso arma la gran meta!</p>
+            </div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+        
+<div id="ant-game-area" class="game-area">
+            <h2>Abundancia Financiera 💰</h2>
+            <p>¡Evita que las hormigas se roben tu dinero! Tócalas para aplastarlas.</p>
+            <div id="ant-game-area-canvas">
+                <span class="money-pile">💰</span>
+            </div>
+            <div id="ant-score">Hormigas Aplastadas: 0</div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+        
+<div id="swipe-game-area" class="game-area">
+            <h2>Bienestar Físico 💪</h2>
+            <p>¡Desliza a la derecha (✔️) para hábitos positivos, a la izquierda (❌) para los negativos! ¡Rápido!</p>
+            <div id="swipe-game">
+                <div class="swipe-game-end" id="swipe-game-end-message"></div>
+            </div>
+            <div id="swipe-timer">Tiempo: 30s</div>
+            <div id="swipe-score">Puntaje: 0</div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+        
+<div id="ice-cream-game-area" class="game-area">
+            <h2>Relaciones Sanas ❤️</h2>
+            <p>¡Toca rápido el helado para consumirlo antes de que se derrita!</p>
+            <div id="ice-cream-game" style="background-color: #ffcccc;">
+                <div id="ice-cream-scoop"></div>
+            </div>
+            <div id="ice-cream-game-message">Toca: 0</div>
+            <div id="flower-message" style="display:none; font-size: 1.5em; font-weight: bold; color: #28a745; margin-top: 20px;">🌸 ¡Lo genuino siempre encuentra lo genuino! 🌸</div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+        
+<div id="travel-game-area" class="game-area">
+            <h2>Lugares por Conocer ✈️</h2>
+            <p>¡Presiona los botones para inspirarte en tu próxima aventura!</p>
+            <div class="travel-buttons" style="display: flex; justify-content: center; gap: 15px;">
+                <div class="travel-btn" data-message="¡Un concierto bajo las estrellas en un festival único!" style="font-size: 2em; background-color: #a2d2ff;">🎶</div>
+                <div class="travel-btn" data-message="¡Un recorrido por las mejores cafeterías de SLP!" style="font-size: 2em; background-color: #a2d2ff;">☕</div>
+                <div class="travel-btn" data-message="¡Una escapada a la playa para recargar energías!" style="font-size: 2em; background-color: #a2d2ff;">🏖️</div>
+                <div class="travel-btn" data-message="¡Explorar una nueva ciudad llena de historia y arte!" style="font-size: 2em; background-color: #a2d2ff;">🏛️</div>
+                <div class="travel-btn" data-message="¡Una aventura en la montaña para conectar con la naturaleza!" style="font-size: 2em; background-color: #a2d2ff;">⛰️</div>
+            </div>
+            <div id="travel-message" style="margin-top: 20px; min-height: 40px; font-size: 1.3em; font-weight: bold; color: #007bff;"></div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+        
+<div id="mirror-game-area" class="game-area">
+            <h2>Palabras con Impacto ✨</h2>
+            <p>¡Limpia el espejo frotando con tu dedo!</p>
+            <canvas id="mirror-game-canvas" width="300" height="200"></canvas>
+            <div id="mirror-message" style="display:none; font-size: 1.5em; font-weight: bold; color: #8338ec; margin-top: 15px;">"Eres hermosa, inteligente y más que suficiente"</div>
+            <button class="back-button" onclick="goBack()">Volver al Menú</button>
+        </div>
+
+    </div>
+
+    <script>
+        let currentGameId = null;
+        let animationFrames = {}; 
+
+        // --- Manejo de Menú y Juegos ---
+        function showGame(gameId) {
+            document.getElementById('main-menu').style.display = 'none';
+            if (currentGameId) {
+                document.getElementById(currentGameId).classList.remove('active');
+                resetGame(currentGameId);
+            }
+            currentGameId = gameId;
+            const gameArea = document.getElementById(gameId);
+            gameArea.classList.add('active');
+            initializeGame(gameId);
+        }
+
+        function goBack() {
+            if (currentGameId) {
+                document.getElementById(currentGameId).classList.remove('active');
+                resetGame(currentGameId);
+            }
+            document.getElementById('main-menu').style.display = 'grid';
+            currentGameId = null;
+        }
+
+        function initializeGame(gameId) {
+            // Detener animaciones previas
+            if (animationFrames[gameId]) {
+                cancelAnimationFrame(animationFrames[gameId]);
+            }
+
+            switch (gameId) {
+                case 'fog-game-area':
+                    initFogGame();
+                    break;
+                case 'ant-game-area':
+                    initAntGame();
+                    break;
+                case 'swipe-game-area':
+                    initSwipeGame();
+                    break;
+                case 'ice-cream-game-area':
+                    initIceCreamGame();
+                    break;
+                case 'travel-game-area':
+                    initTravelGame();
+                    break;
+                case 'mirror-game-area':
+                    initMirrorGame();
+                    break;
+            }
+        }
+
+        function resetGame(gameId) {
+            if (animationFrames[gameId]) {
+                clearInterval(animationFrames[gameId]);
+                delete animationFrames[gameId];
+            }
+            
+            // Limpiar estados de juego
+            if (gameId === 'ant-game-area') {
+                const antContainer = document.getElementById('ant-game-area-canvas');
+                antContainer.innerHTML = '<span class="money-pile">💰</span>';
+                document.getElementById('ant-score').innerText = 'Hormigas Aplastadas: 0';
+            }
+            if (gameId === 'swipe-game-area') {
+                 document.getElementById('swipe-game').innerHTML = '<div class="swipe-game-end" id="swipe-game-end-message"></div>';
+            }
+        }
+
+        // --- Funciones del Minijuego 1 (Niebla) y 7 (Espejo) ---
+        function setupWipeCanvas(canvasId, resultId, metasOrText, wipeThreshold, finishMessage) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const resultElement = document.getElementById(resultId);
+
+            // 1. Dibujar el contenido/fondo
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = (canvasId === 'fog-game-canvas') ? '#a0c4ff' : 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = (canvasId === 'fog-game-canvas') ? '#4a4a4a' : '#222';
+            
+            if (Array.isArray(metasOrText)) { 
+                metasOrText.forEach((meta, index) => {
+                    const y = (canvas.height / (metasOrText.length + 1)) * (index + 1);
+                    ctx.fillText(meta, canvas.width / 2, y);
+                });
+            } else { 
+                 ctx.font = '18px Arial';
+                 ctx.fillText("Limpia el espejo...", canvas.width / 2, canvas.height / 2);
+            }
+
+            // 2. Cubrir con la "niebla"
+            ctx.fillStyle = (canvasId === 'fog-game-canvas') ? 'rgba(180, 180, 180, 0.9)' : 'rgba(176, 199, 199, 1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let isWiping = false;
+            
+            function wipe(e) {
+                if (!isWiping) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+                const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over';
+
+                checkCompletion();
+            }
+            
+            function startWiping(e) {
+                e.preventDefault(); // Evita el scroll táctil
+                isWiping = true;
+                wipe(e);
+            }
+
+            function stopWiping() {
+                isWiping = false;
+            }
+
+            function checkCompletion() {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let opaquePixels = 0;
+                for (let i = 3; i < imageData.data.length; i += 4) {
+                    if (imageData.data[i] > 10) { 
+                        opaquePixels++;
+                    }
+                }
+                const totalPixels = (canvas.width * canvas.height);
+                const opacityPercent = opaquePixels / totalPixels;
+
+                if (opacityPercent < wipeThreshold) {
+                    resultElement.style.display = 'block';
+                    resultElement.innerText = finishMessage || resultElement.innerText;
+
+                    // Remover listeners para finalizar
+                    canvas.removeEventListener('pointerdown', startWiping);
+                    canvas.removeEventListener('pointermove', wipe);
+                    canvas.removeEventListener('pointerup', stopWiping);
+                    canvas.removeEventListener('touchstart', startWiping);
+                    canvas.removeEventListener('touchmove', wipe);
+                    canvas.removeEventListener('touchend', stopWiping);
+                }
+            }
+
+            // Asignar listeners táctiles (touch) y de puntero (pointer)
+            canvas.addEventListener('pointerdown', startWiping);
+            canvas.addEventListener('pointermove', wipe);
+            canvas.addEventListener('pointerup', stopWiping);
+            canvas.addEventListener('pointerout', stopWiping);
+            
+            canvas.addEventListener('touchstart', startWiping);
+            canvas.addEventListener('touchmove', wipe);
+            canvas.addEventListener('touchend', stopWiping);
+        }
+
+        function initFogGame() {
+            const metas = ['🎯 Viajar', '📚 Aprender', '💡 Innovar', '💖 Amar'];
+            const finishMessage = '¡Tus metas están claras como el agua!';
+            document.getElementById('fog-game-result').innerText = '';
+            document.getElementById('fog-game-result').style.display = 'none';
+            setupWipeCanvas('fog-game-canvas', 'fog-game-result', metas, 0.2, finishMessage);
+        }
+
+        function initMirrorGame() {
+            const finishMessage = '';
+            document.getElementById('mirror-message').style.display = 'none';
+            setupWipeCanvas('mirror-game-canvas', 'mirror-message', "Vaho", 0.1, finishMessage);
+        }
+
+        // --- Minijuego 3: Abundancia Financiera (Hormigas) ---
+        let antScore = 0;
+        const antContainer = document.getElementById('ant-game-area-canvas');
+
+        function createAnt() {
+            const ant = document.createElement('div');
+            ant.classList.add('ant');
+            ant.innerText = '🐜';
+            
+            ant.style.left = `${Math.random() * (antContainer.offsetWidth - 30)}px`;
+            ant.style.top = `${Math.random() * (antContainer.offsetHeight - 30)}px`;
+
+            const targetX = Math.random() * (antContainer.offsetWidth - 30);
+            const targetY = Math.random() * (antContainer.offsetHeight - 30);
+            const duration = Math.random() * 2 + 1.5;
+            
+            ant.style.transitionDuration = `${duration}s`;
+            ant.style.transform = `translate(${targetX - parseInt(ant.style.left)}px, ${targetY - parseInt(ant.style.top)}px)`;
+
+            antContainer.appendChild(ant);
+
+            setTimeout(() => {
+                if (ant.parentNode === antContainer) {
+                    antContainer
